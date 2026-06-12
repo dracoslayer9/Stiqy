@@ -23,6 +23,13 @@ const getFirstDayOfMonth = (year, month) => {
   return day === 0 ? 6 : day - 1; // 0 = Mon, 6 = Sun
 };
 
+const formatTimeInput = (value) => {
+  const digits = value.replace(/\D/g, '');
+  if (digits.length === 0) return '';
+  if (digits.length <= 2) return digits;
+  return digits.slice(0, 2) + ':' + digits.slice(2, 4);
+};
+
 export default function DailyPage() {
   const showToast = useToast();
   const [blocks, setBlocks] = useLocalStorage('time-blocks', DEFAULT_BLOCKS);
@@ -32,6 +39,9 @@ export default function DailyPage() {
 
   const [expandedBlock, setExpandedBlock] = useState(null);
   const [timerTask, setTimerTask] = useState(null);
+
+  // Sort blocks chronologically by time
+  const sortedBlocks = [...blocks].sort((a, b) => a.time.localeCompare(b.time));
 
   // 90 Days History of Task Completion
   const [history, setHistory] = useLocalStorage('daily-history', () => {
@@ -203,12 +213,12 @@ export default function DailyPage() {
       <div className="section">
         <div className="section-label">Time blocks</div>
         <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          {blocks.length === 0 ? (
+          {sortedBlocks.length === 0 ? (
             <div className="empty-state" style={{ padding: '1rem' }}>
               Belum ada jadwal. Tambahkan di bawah.
             </div>
           ) : (
-            blocks.map((block) => (
+            sortedBlocks.map((block) => (
               <TimeBlock
                 key={block.id}
                 block={block}
@@ -235,7 +245,7 @@ export default function DailyPage() {
                     className="input"
                     placeholder="08:00"
                     value={newBlock.time}
-                    onChange={(e) => setNewBlock((nb) => ({ ...nb, time: e.target.value }))}
+                    onChange={(e) => setNewBlock((nb) => ({ ...nb, time: formatTimeInput(e.target.value) }))}
                   />
                 </div>
                 <div style={{ flex: 1 }}>

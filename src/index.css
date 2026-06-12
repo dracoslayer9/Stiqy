@@ -573,6 +573,14 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--color-bg-surface);
 }
 
+.time-block-wrapper.completed-green {
+  background: rgba(29, 158, 117, 0.07) !important;
+}
+
+.time-block-wrapper.incomplete-grey {
+  background: var(--color-bg-surface) !important;
+}
+
 .time-block {
   display: flex;
   align-items: center;

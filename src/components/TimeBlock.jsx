@@ -15,6 +15,13 @@ const catClass = {
   Personal: 'tag-personal',
 };
 
+const formatTimeInput = (value) => {
+  const digits = value.replace(/\D/g, '');
+  if (digits.length === 0) return '';
+  if (digits.length <= 2) return digits;
+  return digits.slice(0, 2) + ':' + digits.slice(2, 4);
+};
+
 export default function TimeBlock({
   block,
   tasks,
@@ -76,6 +83,11 @@ export default function TimeBlock({
     onDeleteBlock(block.id);
   };
 
+  const totalTasks = blockTasks.length;
+  const completedTasks = blockTasks.filter((t) => t.done).length;
+  const isAllCompleted = totalTasks > 0 && completedTasks === totalTasks;
+  const blockStatusClass = isAllCompleted ? 'completed-green' : 'incomplete-grey';
+
   // --- Edit mode ---
   if (editing) {
     return (
@@ -87,7 +99,7 @@ export default function TimeBlock({
               <input
                 className="input"
                 value={editData.time}
-                onChange={(e) => setEditData((d) => ({ ...d, time: e.target.value }))}
+                onChange={(e) => setEditData((d) => ({ ...d, time: formatTimeInput(e.target.value) }))}
                 placeholder="08:00"
               />
             </div>
@@ -139,7 +151,7 @@ export default function TimeBlock({
 
   // --- Display mode ---
   return (
-    <div className={`time-block-wrapper ${expanded ? 'expanded' : ''}`}>
+    <div className={`time-block-wrapper ${expanded ? 'expanded' : ''} ${blockStatusClass}`}>
       {/* Clickable header */}
       <div className="time-block" onClick={onToggle} role="button" tabIndex={0}>
         <div className="time-block-time">{block.time}</div>
