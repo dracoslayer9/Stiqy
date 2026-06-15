@@ -22,24 +22,26 @@ const formatTimeInput = (value) => {
   return digits.slice(0, 2) + ':' + digits.slice(2, 4);
 };
 
-export default function TimeBlock({
-  block,
+export default function RoutineItem({
+  routine,
   tasks,
   expanded,
-  onToggle,
-  onUpdateBlock,
-  onDeleteBlock,
+  onToggleExpand,
+  onUpdateRoutine,
+  onDeleteRoutine,
   onAddTask,
   onToggleTask,
   onDeleteTask,
   onStartTimer,
+  onToggleRoutineHeader,
+  onUpdateTask,
 }) {
   const [editing, setEditing] = useState(false);
-  const [editData, setEditData] = useState({ ...block });
+  const [editData, setEditData] = useState({ ...routine });
   const [taskName, setTaskName] = useState('');
   const [taskPriority, setTaskPriority] = useState('medium');
 
-  const blockTasks = tasks.filter((t) => t.blockId === block.id);
+  const routineTasks = tasks.filter((t) => t.blockId === routine.id);
 
   // --- Task actions ---
   const handleAddTask = () => {
@@ -48,8 +50,8 @@ export default function TimeBlock({
       id: Date.now(),
       name: taskName.trim(),
       priority: taskPriority,
-      category: block.category,
-      blockId: block.id,
+      category: routine.category,
+      blockId: routine.id,
       done: false,
     });
     setTaskName('');
@@ -59,10 +61,10 @@ export default function TimeBlock({
     if (e.key === 'Enter') handleAddTask();
   };
 
-  // --- Block edit actions ---
+  // --- Routine edit actions ---
   const startEdit = (e) => {
     e.stopPropagation();
-    setEditData({ ...block });
+    setEditData({ ...routine });
     setEditing(true);
   };
 
@@ -74,25 +76,29 @@ export default function TimeBlock({
   const saveEdit = (e) => {
     e.stopPropagation();
     if (!editData.time.trim() || !editData.title.trim()) return;
-    onUpdateBlock(block.id, editData);
+    onUpdateRoutine(routine.id, editData);
     setEditing(false);
   };
 
   const handleDelete = (e) => {
     e.stopPropagation();
-    onDeleteBlock(block.id);
+    onDeleteRoutine(routine.id);
   };
 
-  const totalTasks = blockTasks.length;
-  const completedTasks = blockTasks.filter((t) => t.done).length;
-  const isAllCompleted = totalTasks > 0 && completedTasks === totalTasks;
-  const blockStatusClass = isAllCompleted ? 'completed-green' : 'incomplete-grey';
+  const totalTasks = routineTasks.length;
+  const completedTasks = routineTasks.filter((t) => t.done).length;
+  
+  // A routine is completed if it has tasks and all tasks are completed, OR if it has no tasks and the routine itself is checked.
+  const isCompleted = totalTasks > 0 
+    ? completedTasks === totalTasks 
+    : !!routine.done;
 
-  // --- Edit mode ---
+  const routineStatusClass = isCompleted ? 'completed-green' : 'incomplete-grey';
+
   if (editing) {
     return (
-      <div className="time-block-wrapper">
-        <div className="time-block-edit" onClick={(e) => e.stopPropagation()}>
+      <div className="routine-item-wrapper">
+        <div className="routine-item-edit" onClick={(e) => e.stopPropagation()}>
           <div className="form-row" style={{ marginBottom: '8px' }}>
             <div style={{ flex: '0 0 68px' }}>
               <label className="form-label">Waktu</label>
@@ -149,31 +155,45 @@ export default function TimeBlock({
     );
   }
 
-  // --- Display mode ---
   return (
-    <div className={`time-block-wrapper ${expanded ? 'expanded' : ''} ${blockStatusClass}`}>
-      {/* Clickable header */}
-      <div className="time-block" onClick={onToggle} role="button" tabIndex={0}>
-        <div className="time-block-time">{block.time}</div>
-        <div className="time-block-info">
-          <div className="time-block-title">
-            {block.title}
-            <span className={`tag ${catClass[block.category] || 'tag-personal'}`}>
-              {block.category.toLowerCase()}
+    <div className={`routine-item-wrapper ${expanded ? 'expanded' : ''} ${routineStatusClass}`}>
+      <div className="routine-item" onClick={onToggleExpand} role="button" tabIndex={0}>
+        {/* Checkbox for Routine Accomplishment */}
+        <div 
+          className="routine-checkbox-container" 
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleRoutineHeader(routine.id);
+          }}
+        >
+          <input 
+            type="checkbox" 
+            className="routine-checkbox"
+            checked={isCompleted}
+            onChange={() => {}} // handled by onClick container
+          />
+        </div>
+
+        <div className="routine-item-time">{routine.time}</div>
+        <div className="routine-item-info">
+          <div className="routine-item-title">
+            {routine.title}
+            <span className={`tag ${catClass[routine.category] || 'tag-personal'}`}>
+              {routine.category.toLowerCase()}
             </span>
-            {blockTasks.length > 0 && (
-              <span className="time-block-count">
-                {blockTasks.filter((t) => t.done).length}/{blockTasks.length}
+            {totalTasks > 0 && (
+              <span className="routine-item-count">
+                {completedTasks}/{totalTasks}
               </span>
             )}
           </div>
-          {block.description && (
-            <div className="time-block-desc">{block.description}</div>
+          {routine.description && (
+            <div className="routine-item-desc">{routine.description}</div>
           )}
         </div>
 
-        {/* Edit / Delete — visible on hover */}
-        <div className="time-block-actions">
+        {/* Edit / Delete actions */}
+        <div className="routine-item-actions">
           <button className="tb-action-btn" onClick={startEdit} aria-label="Edit">
             <IconPencil size={13} stroke={1.5} />
           </button>
@@ -185,34 +205,34 @@ export default function TimeBlock({
         <IconChevronDown
           size={14}
           stroke={1.5}
-          className={`time-block-chevron ${expanded ? 'rotated' : ''}`}
+          className={`routine-item-chevron ${expanded ? 'rotated' : ''}`}
         />
       </div>
 
-      {/* Expandable content */}
+      {/* Expandable subtasks */}
       {expanded && (
-        <div className="time-block-body">
-          {/* Task list */}
-          {blockTasks.length > 0 && (
-            <div className="time-block-tasks">
-              {blockTasks.map((task) => (
+        <div className="routine-item-body">
+          {totalTasks > 0 && (
+            <div className="routine-item-tasks">
+              {routineTasks.map((task) => (
                 <TaskItem
                   key={task.id}
                   task={task}
                   onToggle={onToggleTask}
                   onDelete={onDeleteTask}
                   onStartTimer={onStartTimer}
+                  onUpdate={onUpdateTask}
                 />
               ))}
             </div>
           )}
 
-          {/* Inline add form */}
-          <div className="time-block-add">
+          {/* Add task form */}
+          <div className="routine-item-add">
             <div className="form-row">
               <input
                 className="input"
-                placeholder="Tambah kegiatan..."
+                placeholder="Tambah sub-kegiatan..."
                 value={taskName}
                 onChange={(e) => setTaskName(e.target.value)}
                 onKeyDown={handleTaskKeyDown}
