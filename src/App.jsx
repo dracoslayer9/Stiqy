@@ -270,7 +270,7 @@ export default function App() {
 
           <div className="percentage-text">{progress}%</div>
 
-          {isRunning && <p className="focus-instruction">Fokus sedang berjalan...</p>}
+          {isRunning && <p className="focus-instruction">Fokus sedang berjalan. Jauhkan gangguan...</p>}
         </div>
       )}
 
