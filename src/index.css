@@ -101,7 +101,6 @@ body {
   font-size: 0.75rem;
   color: var(--text-secondary);
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 

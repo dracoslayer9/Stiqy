@@ -225,14 +225,14 @@ export default function App() {
       {!showGlassView && (
         <div className="stats-grid">
           <div className="stat-card">
-            <span className="stat-label">Sesi Hari Ini</span>
+            <span className="stat-label">Sesi hari ini</span>
             <div className="stat-value">
               <IconFlame size={22} style={{ color: '#f97316' }} />
               {dailyStats.completedCount}
             </div>
           </div>
           <div className="stat-card">
-            <span className="stat-label">Koin Sesi Ini</span>
+            <span className="stat-label">Koin terkumpul</span>
             <div className="stat-value">
               <IconCoins size={22} style={{ color: '#fbbf24' }} />
               {sessionCoins}
@@ -262,46 +262,44 @@ export default function App() {
         </div>
       )}
 
-      {/* 4. Glass Visualization (Only shown when actively running/focusing or celebrating completion) */}
-      {showGlassView && (
-        <div className="glass-section">
-          {showPop && <div className="coin-popup">{popRewardText}</div>}
+      {/* 4. Glass Visualization (Always shown) */}
+      <div className="glass-section">
+        {showPop && <div className="coin-popup">{popRewardText}</div>}
 
-          <div className="glass-wrapper">
-            <div className="glass-lip"></div>
-            <div className="glass-highlight"></div>
-            <div className="glass-body">
-              <div 
-                className="water" 
-                style={{ 
-                  height: `${progress}%`, 
-                  color: waterColor,
-                  backgroundColor: 'currentColor'
-                }}
-              >
-                {progress > 0 && (
-                  <svg className="water-waves" viewBox="0 0 100 20" preserveAspectRatio="none">
-                    <path 
-                      className="wave-back" 
-                      d="M 0 10 C 30 4, 60 16, 100 10 L 100 20 L 0 20 Z" 
-                      fill="rgba(255,255,255,0.15)" 
-                    />
-                    <path 
-                      className="wave-front" 
-                      d="M 0 10 C 40 16, 70 4, 100 10 L 100 20 L 0 20 Z" 
-                      fill="rgba(255,255,255,0.25)" 
-                    />
-                  </svg>
-                )}
-              </div>
+        <div className="glass-wrapper">
+          <div className="glass-lip"></div>
+          <div className="glass-highlight"></div>
+          <div className="glass-body">
+            <div 
+              className="water" 
+              style={{ 
+                height: `${progress}%`, 
+                color: waterColor,
+                backgroundColor: 'currentColor'
+              }}
+            >
+              {progress > 0 && (
+                <svg className="water-waves" viewBox="0 0 100 20" preserveAspectRatio="none">
+                  <path 
+                    className="wave-back" 
+                    d="M 0 10 C 30 4, 60 16, 100 10 L 100 20 L 0 20 Z" 
+                    fill="rgba(255,255,255,0.15)" 
+                  />
+                  <path 
+                    className="wave-front" 
+                    d="M 0 10 C 40 16, 70 4, 100 10 L 100 20 L 0 20 Z" 
+                    fill="rgba(255,255,255,0.25)" 
+                  />
+                </svg>
+              )}
             </div>
           </div>
-
-          <div className="percentage-text">{progress}%</div>
-
-          {isRunning && <p className="focus-instruction">Fokus sedang berjalan. Jauhkan gangguan...</p>}
         </div>
-      )}
+
+        <div className="percentage-text">{progress}%</div>
+
+        {isRunning && <p className="focus-instruction">Fokus sedang berjalan. Jauhkan gangguan...</p>}
+      </div>
 
       {/* 5. Reward / Completion Message Banner (Shown in normal view after completing) */}
       {!showGlassView && showBanner && (
