@@ -32,6 +32,7 @@ export default function App() {
   const [showPop, setShowPop] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
   const [popRewardText, setPopRewardText] = useState('');
+  const [showAbandonWarning, setShowAbandonWarning] = useState(false);
 
   // Daily stats persisted to localStorage
   const [todayDateStr] = useState(() => new Date().toDateString());
@@ -58,6 +59,30 @@ export default function App() {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, []);
+
+  // Track if previous session was abandoned on page reload/close
+  useEffect(() => {
+    const wasActive = localStorage.getItem('ayofokus_session_active') === 'true';
+    if (wasActive) {
+      setShowAbandonWarning(true);
+      localStorage.setItem('ayofokus_session_active', 'false');
+    }
+  }, []);
+
+  // Warn user before reload/tab close during focus
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (isRunning) {
+        e.preventDefault();
+        e.returnValue = 'Sesi fokus sedang berjalan! Jika Anda keluar, progres Anda akan direset ke 0.';
+        return e.returnValue;
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isRunning]);
 
   // Web Audio API Synthesis for completion sound
   const playFinishChime = () => {
@@ -88,6 +113,8 @@ export default function App() {
     setIsRunning(true);
     setIsCelebrating(false);
     setShowBanner(false);
+    setShowAbandonWarning(false);
+    localStorage.setItem('ayofokus_session_active', 'true');
 
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
@@ -98,6 +125,7 @@ export default function App() {
           setIsRunning(false);
           setIsCelebrating(true); // Enter celebration state so the glass stays visible briefly
           setIsCompleted(true);
+          localStorage.setItem('ayofokus_session_active', 'false');
           if (timerRef.current) clearInterval(timerRef.current);
           
           // Add reward
@@ -129,6 +157,7 @@ export default function App() {
   const handlePause = () => {
     setIsRunning(false);
     if (timerRef.current) clearInterval(timerRef.current);
+    localStorage.setItem('ayofokus_session_active', 'false');
   };
 
   const handleReset = () => {
@@ -139,6 +168,7 @@ export default function App() {
     setSessionCoins(0);
     setShowPop(false);
     setShowBanner(false);
+    localStorage.setItem('ayofokus_session_active', 'false');
     if (timerRef.current) clearInterval(timerRef.current);
   };
 
@@ -278,6 +308,13 @@ export default function App() {
         <div className="reward-banner">
           <IconSparkles size={18} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }} />
           Gelasmu penuh — +{activeDurationObj.reward} koin fokus didapat!
+        </div>
+      )}
+
+      {/* 5b. Abandon Warning Banner (Shown if user force closed previous session) */}
+      {!showGlassView && showAbandonWarning && (
+        <div className="reward-banner" style={{ backgroundColor: 'rgba(239, 68, 68, 0.08)', borderColor: 'rgba(239, 68, 68, 0.2)', color: '#b91c1c' }}>
+          ⚠️ Sesi fokus sebelumnya terputus karena aplikasi ditutup. Kemajuan direset ke 0!
         </div>
       )}
 
