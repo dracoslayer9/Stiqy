@@ -14,8 +14,7 @@ import './index.css'; // Ensure styling is applied!
 const DURATIONS = [
   { label: '25 mnt', seconds: 25 * 60, reward: 2 },
   { label: '60 mnt', seconds: 60 * 60, reward: 5 },
-  { label: '90 mnt', seconds: 90 * 60, reward: 8 },
-  { label: '⚡ Demo', seconds: 10, reward: 1 } // Easy testing for validation
+  { label: '90 mnt', seconds: 90 * 60, reward: 8 }
 ];
 
 export default function App() {
@@ -287,35 +286,30 @@ export default function App() {
         {/* Only Jeda (Pause) button is shown during active focus */}
         {showGlassView ? (
           isRunning && (
-            <button className="btn btn-secondary" onClick={handlePause}>
-              <IconPlayerPause size={20} stroke={2.5} />
-              Jeda Fokus
-            </button>
+            <>
+              <button className="btn btn-secondary" onClick={handlePause}>
+                <IconPlayerPause size={20} stroke={2.5} />
+                Jeda Fokus
+              </button>
+              <button className="btn btn-secondary" onClick={handleReset}>
+                <IconRefresh size={20} stroke={2.5} />
+                Reset Sesi
+              </button>
+            </>
           )
         ) : (
           // Standard controls in stats/menu view
-          <>
-            {elapsed === 0 ? (
-              <button className="btn btn-primary" onClick={handleStart}>
-                <IconPlayerPlay size={20} stroke={2.5} />
-                Mulai Fokus
-              </button>
-            ) : (
-              <button className="btn btn-primary" onClick={handleStart} disabled={isCompleted}>
-                <IconPlayerPlay size={20} stroke={2.5} />
-                Lanjutkan
-              </button>
-            )}
-
-            <button 
-              className="btn btn-secondary" 
-              onClick={handleReset}
-              disabled={elapsed === 0}
-            >
-              <IconRefresh size={20} stroke={2.5} />
-              Reset Sesi
+          elapsed === 0 ? (
+            <button className="btn btn-primary" onClick={handleStart}>
+              <IconPlayerPlay size={20} stroke={2.5} />
+              Mulai Fokus
             </button>
-          </>
+          ) : (
+            <button className="btn btn-primary" onClick={handleStart} disabled={isCompleted}>
+              <IconPlayerPlay size={20} stroke={2.5} />
+              Lanjutkan
+            </button>
+          )
         )}
       </div>
     </div>
