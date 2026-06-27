@@ -270,17 +270,7 @@ export default function App() {
 
           <div className="percentage-text">{progress}%</div>
 
-          <div 
-            className="phase-badge" 
-            style={{ 
-              color: progress === 100 ? '#fff' : '#0f172a', 
-              backgroundColor: phaseColor 
-            }}
-          >
-            {phaseLabel}
-          </div>
-
-          {isRunning && <p className="focus-instruction">Fokus sedang berjalan. Jauhkan gangguan...</p>}
+          {isRunning && <p className="focus-instruction">Fokus sedang berjalan...</p>}
         </div>
       )}
 
