@@ -352,9 +352,6 @@ export default function App() {
                 <IconRefresh size={20} stroke={2.5} />
                 Reset Sesi
               </button>
-              <button className="btn-ghost" onClick={handleReset}>
-                ← Kembali ke beranda
-              </button>
             </>
           )
         ) : (
