@@ -261,26 +261,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 3. Duration Selector (Only shown when not active focusing and not paused/completed) */}
-      {!showGlassView && elapsed === 0 && (
-        <div className="duration-container">
-          <span className="duration-label">Pilih Durasi Fokus</span>
-          <div className="duration-options">
-            {DURATIONS.map((dur, index) => (
-              <button
-                key={dur.label}
-                className={`duration-btn ${selectedDurationIndex === index ? 'active' : ''}`}
-                onClick={() => {
-                  setSelectedDurationIndex(index);
-                  handleReset();
-                }}
-              >
-                {dur.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+
 
       {/* 4. Glass Visualization (Always shown) */}
       <div className="glass-section">
@@ -316,7 +297,28 @@ export default function App() {
           </div>
         </div>
 
-        <div className="percentage-text">{progress}%</div>
+        <div className={`percentage-text ${!showGlassView ? 'percentage-muted' : ''}`}>{progress}%</div>
+
+        {/* Duration Selector — di bawah persentase, sebelum CTA */}
+        {!showGlassView && elapsed === 0 && (
+          <div className="duration-container">
+            <span className="duration-label">Pilih Durasi Fokus</span>
+            <div className="duration-options">
+              {DURATIONS.map((dur, index) => (
+                <button
+                  key={dur.label}
+                  className={`duration-btn ${selectedDurationIndex === index ? 'active' : ''}`}
+                  onClick={() => {
+                    setSelectedDurationIndex(index);
+                    handleReset();
+                  }}
+                >
+                  {dur.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {isRunning && <p className="focus-instruction">Fokus sedang berjalan. Jauhkan gangguan...</p>}
       </div>
@@ -349,6 +351,9 @@ export default function App() {
               <button className="btn btn-secondary" onClick={handleReset}>
                 <IconRefresh size={20} stroke={2.5} />
                 Reset Sesi
+              </button>
+              <button className="btn-ghost" onClick={handleReset}>
+                ← Kembali ke beranda
               </button>
             </>
           )
