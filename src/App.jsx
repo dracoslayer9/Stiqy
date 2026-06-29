@@ -240,15 +240,15 @@ export default function App() {
       {!showGlassView && (
         <div className="stats-grid">
           <div className="stat-card">
-            <span className="stat-label">Sesi hari ini</span>
+            <span className="stat-label">Pencapaian</span>
             <div className="stat-value">
               <IconFlame size={22} style={{ color: '#f97316' }} />
-              {dailyStats.completedCount} sesi
-            </div>
-            <div className="stat-duration">
               {dailyStats.totalSeconds > 0
                 ? formatDuration(dailyStats.totalSeconds)
                 : '0 dtk'}
+            </div>
+            <div className="stat-duration">
+              {dailyStats.completedCount} sesi diselesaikan
             </div>
           </div>
           <div className="stat-card">
