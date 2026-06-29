@@ -17,6 +17,26 @@ const DURATIONS = [
   { label: '90 mnt', seconds: 90 * 60, reward: 8 }
 ];
 
+// Appreciation messages per duration
+const APPRECIATION_MESSAGES = [
+  "25 menit penuh tanpa gangguan. Itu lebih dari yang dilakukan kebanyakan orang hari ini.",
+  "Satu jam milikmu sepenuhnya. Otak kamu baru saja bekerja keras untuk masa depanmu.",
+  "90 menit deep work. Kamu baru saja melakukan apa yang membedakan yang biasa dari yang luar biasa."
+];
+
+// Confetti particles — generated once, stable (no random on each render)
+const CONFETTI_COLORS = ['#ffffff', '#bbf7d0', '#86efac', '#fbbf24', '#a3e635', '#d9f99d'];
+const CONFETTI_PARTICLES = Array.from({ length: 38 }, (_, i) => ({
+  id: i,
+  color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+  left: `${((i * 2.63 + 1.5) % 100).toFixed(1)}%`,
+  delay: `${((i * 0.16) % 2.4).toFixed(2)}s`,
+  duration: `${(2.8 + (i * 0.09) % 1.8).toFixed(2)}s`,
+  size: `${5 + (i * 3) % 7}px`,
+  drift: `${-45 + (i * 11) % 90}px`,
+  isRect: i % 3 !== 0
+}));
+
 export default function App() {
   const [selectedDurationIndex, setSelectedDurationIndex] = useState(0);
   const activeDurationObj = DURATIONS[selectedDurationIndex];
@@ -33,6 +53,7 @@ export default function App() {
   const [showBanner, setShowBanner] = useState(false);
   const [popRewardText, setPopRewardText] = useState('');
   const [showAbandonWarning, setShowAbandonWarning] = useState(false);
+  const [showCelebrationScreen, setShowCelebrationScreen] = useState(false);
 
   // Daily stats persisted to localStorage
   const [todayDateStr] = useState(() => new Date().toDateString());
@@ -156,11 +177,10 @@ export default function App() {
             totalSeconds: (prevStats.totalSeconds || 0) + activeDurationObj.seconds
           }));
 
-          // End celebration after 2.5 seconds, hide glass and show results banner
+          // Show celebration screen after brief glass overflow moment
           setTimeout(() => {
-            setIsCelebrating(false);
-            setShowBanner(true);
-          }, 2500);
+            setShowCelebrationScreen(true);
+          }, 900);
 
           return activeDurationObj.seconds;
         }
@@ -183,6 +203,7 @@ export default function App() {
     setSessionCoins(0);
     setShowPop(false);
     setShowBanner(false);
+    setShowCelebrationScreen(false);
     localStorage.setItem('ayofokus_session_active', 'false');
     if (timerRef.current) clearInterval(timerRef.current);
   };
@@ -267,7 +288,7 @@ export default function App() {
       <div className="glass-section">
         {showPop && <div className="coin-popup">{popRewardText}</div>}
 
-        <div className="glass-wrapper">
+        <div className={`glass-wrapper ${isCelebrating ? 'glass-overflowing' : ''}`}>
           <div className="glass-lip"></div>
           <div className="glass-highlight"></div>
           <div className="glass-body">
@@ -369,6 +390,51 @@ export default function App() {
           )
         )}
       </div>
+
+      {/* Celebration Full-Screen Overlay */}
+      {showCelebrationScreen && (
+        <div className="celebration-overlay">
+          {/* Confetti */}
+          <div className="confetti-container" aria-hidden="true">
+            {CONFETTI_PARTICLES.map(p => (
+              <div
+                key={p.id}
+                className="confetti-piece"
+                style={{
+                  left: p.left,
+                  backgroundColor: p.color,
+                  width: p.size,
+                  height: p.isRect ? `calc(${p.size} * 0.5)` : p.size,
+                  borderRadius: p.isRect ? '2px' : '50%',
+                  animationDelay: p.delay,
+                  animationDuration: p.duration,
+                  '--drift': p.drift
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Content */}
+          <div className="celebration-content">
+            <div className="celebration-check">✓</div>
+            <span className="celebration-duration-badge">{activeDurationObj.label} selesai</span>
+            <p className="celebration-message">
+              {APPRECIATION_MESSAGES[selectedDurationIndex]}
+            </p>
+            <div className="celebration-reward-pill">+{activeDurationObj.reward} 🪙 koin fokus</div>
+            <button
+              className="btn-celebration-continue"
+              onClick={() => {
+                setShowCelebrationScreen(false);
+                setIsCelebrating(false);
+                setIsCompleted(true);
+              }}
+            >
+              Lanjutkan →
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
