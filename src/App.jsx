@@ -38,7 +38,8 @@ export default function App() {
   const [todayDateStr] = useState(() => new Date().toDateString());
   const [dailyStats, setDailyStats] = useLocalStorage('ayofokus_daily_stats_light', {
     date: new Date().toDateString(),
-    completedCount: 0
+    completedCount: 0,
+    totalSeconds: 0
   });
 
   // Reset daily stats if date changes
@@ -46,10 +47,23 @@ export default function App() {
     if (dailyStats.date !== todayDateStr) {
       setDailyStats({
         date: todayDateStr,
-        completedCount: 0
+        completedCount: 0,
+        totalSeconds: 0
       });
     }
   }, [dailyStats.date, todayDateStr, setDailyStats]);
+
+  // Format seconds to H jam MM mnt SS dtk
+  const formatDuration = (totalSecs) => {
+    const h = Math.floor(totalSecs / 3600);
+    const m = Math.floor((totalSecs % 3600) / 60);
+    const s = totalSecs % 60;
+    const parts = [];
+    if (h > 0) parts.push(`${h} jam`);
+    if (m > 0 || h > 0) parts.push(`${m} mnt`);
+    parts.push(`${s} dtk`);
+    return parts.join(' ');
+  };
 
   const timerRef = useRef(null);
 
@@ -135,10 +149,11 @@ export default function App() {
           setShowPop(true);
           playFinishChime();
 
-          // Increment daily count
+          // Increment daily count and total time
           setDailyStats(prevStats => ({
             ...prevStats,
-            completedCount: prevStats.completedCount + 1
+            completedCount: prevStats.completedCount + 1,
+            totalSeconds: (prevStats.totalSeconds || 0) + activeDurationObj.seconds
           }));
 
           // End celebration after 2.5 seconds, hide glass and show results banner
@@ -228,7 +243,12 @@ export default function App() {
             <span className="stat-label">Sesi hari ini</span>
             <div className="stat-value">
               <IconFlame size={22} style={{ color: '#f97316' }} />
-              {dailyStats.completedCount}
+              {dailyStats.completedCount} sesi
+            </div>
+            <div className="stat-duration">
+              {dailyStats.totalSeconds > 0
+                ? formatDuration(dailyStats.totalSeconds)
+                : '0 dtk'}
             </div>
           </div>
           <div className="stat-card">

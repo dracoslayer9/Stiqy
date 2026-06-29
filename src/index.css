@@ -113,6 +113,14 @@ body {
   gap: 6px;
 }
 
+.stat-duration {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.03em;
+  margin-top: 2px;
+}
+
 /* Duration selector */
 .duration-container {
   display: flex;
@@ -246,15 +254,16 @@ body {
   fill: currentColor;
   opacity: 0.85;
   pointer-events: none;
+  animation: water-ripple 5s ease-in-out infinite;
 }
 
 .wave-front {
-  animation: wave-flow-front 4s linear infinite;
+  animation: wave-flow-front 10s linear infinite;
   opacity: 0.95;
 }
 
 .wave-back {
-  animation: wave-flow-back 6s linear infinite;
+  animation: wave-flow-back 15s linear infinite;
   opacity: 0.6;
 }
 
@@ -266,6 +275,30 @@ body {
 @keyframes wave-flow-back {
   0% { transform: translateX(-50%); }
   100% { transform: translateX(0); }
+}
+
+@keyframes water-ripple {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.custom-duration-input {
+  width: 80px;
+  padding: 10px;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  outline: none;
+}
+
+.custom-duration-input:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15);
 }
 
 /* Glass Phase & Percentage Labels */
