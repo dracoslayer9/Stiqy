@@ -301,18 +301,58 @@ export default function App() {
               }}
             >
               {progress > 0 && (
-                <svg className="water-waves" viewBox="0 0 100 20" preserveAspectRatio="none">
-                  <path 
-                    className="wave-back" 
-                    d="M 0 10 C 30 4, 60 16, 100 10 L 100 20 L 0 20 Z" 
-                    fill="rgba(255,255,255,0.15)" 
-                  />
-                  <path 
-                    className="wave-front" 
-                    d="M 0 10 C 40 16, 70 4, 100 10 L 100 20 L 0 20 Z" 
-                    fill="rgba(255,255,255,0.25)" 
-                  />
-                </svg>
+                <>
+                  {/* 3-layer SMIL wave morphing — organic calm water */}
+                  <svg className="water-waves" viewBox="0 0 100 20" preserveAspectRatio="none">
+                    {/* Layer 1: Deep slow ripple (back) */}
+                    <path fill="rgba(255,255,255,0.08)">
+                      <animate
+                        attributeName="d"
+                        dur="11s"
+                        repeatCount="indefinite"
+                        calcMode="spline"
+                        keySplines="0.45 0 0.55 1; 0.45 0 0.55 1"
+                        values="
+                          M 0 11 C 20 8, 40 14, 60 10 C 75 7, 88 13, 100 11 L 100 20 L 0 20 Z;
+                          M 0 11 C 20 14, 40 8, 60 12 C 75 15, 88 8, 100 11 L 100 20 L 0 20 Z;
+                          M 0 11 C 20 8, 40 14, 60 10 C 75 7, 88 13, 100 11 L 100 20 L 0 20 Z
+                        "
+                      />
+                    </path>
+                    {/* Layer 2: Mid ripple */}
+                    <path fill="rgba(255,255,255,0.13)">
+                      <animate
+                        attributeName="d"
+                        dur="7s"
+                        repeatCount="indefinite"
+                        calcMode="spline"
+                        keySplines="0.45 0 0.55 1; 0.45 0 0.55 1"
+                        values="
+                          M 0 10 C 25 6, 50 14, 75 8 C 85 5, 93 13, 100 10 L 100 20 L 0 20 Z;
+                          M 0 10 C 25 14, 50 6, 75 13 C 85 16, 93 7, 100 10 L 100 20 L 0 20 Z;
+                          M 0 10 C 25 6, 50 14, 75 8 C 85 5, 93 13, 100 10 L 100 20 L 0 20 Z
+                        "
+                      />
+                    </path>
+                    {/* Layer 3: Surface wave (front) — most visible */}
+                    <path fill="rgba(255,255,255,0.22)">
+                      <animate
+                        attributeName="d"
+                        dur="4.5s"
+                        repeatCount="indefinite"
+                        calcMode="spline"
+                        keySplines="0.45 0 0.55 1; 0.45 0 0.55 1"
+                        values="
+                          M 0 10 C 16 5, 33 14, 50 9 C 66 4, 83 14, 100 10 L 100 20 L 0 20 Z;
+                          M 0 10 C 16 15, 33 6, 50 12 C 66 16, 83 6, 100 10 L 100 20 L 0 20 Z;
+                          M 0 10 C 16 5, 33 14, 50 9 C 66 4, 83 14, 100 10 L 100 20 L 0 20 Z
+                        "
+                      />
+                    </path>
+                  </svg>
+                  {/* Light shimmer sweep on water body */}
+                  <div className="water-shimmer" />
+                </>
               )}
             </div>
           </div>
